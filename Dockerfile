@@ -1,15 +1,15 @@
-# ❌ ERROR 3 (OPTIMIZACIÓN): Está usando una versión antigua y pesada en lugar de node:22-slim o node:24-slim.
-FROM node:14
+# ✅ CORRECCIÓN ERROR 3: Imagen moderna y ligera node:24-slim en lugar de node:14 (obsoleta y pesada)
+FROM node:24-slim
 
 WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN npm install --omit=dev
 
 COPY . .
 
-# ❌ ERROR 4 (PUERTOS): Expone el puerto 8080 cuando el código de la app busca el 3000 o process.env.PORT.
-EXPOSE 8080
+# ✅ CORRECCIÓN ERROR 4: Puerto corregido a 3000, consistente con la app y docker-compose
+EXPOSE 3000
 
 CMD ["npm", "start"]

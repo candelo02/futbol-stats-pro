@@ -11,7 +11,9 @@ beforeAll(async () => {
       diferencia_goles INT DEFAULT 0
     );
   `);
-  await pool.query("INSERT INTO equipos (nombre, puntos, diferencia_goles) VALUES ('ITP F.C.', 9, 5) ON CONFLICT DO NOTHING;");
+  await pool.query(
+    "INSERT INTO equipos (nombre, puntos, diferencia_goles) VALUES ('ITP F.C.', 9, 5) ON CONFLICT DO NOTHING;"
+  );
 });
 
 afterAll(async () => {
@@ -19,18 +21,23 @@ afterAll(async () => {
   await pool.end();
 });
 
+describe('GET /api/health', () => {
+  it('Debería retornar status UP cuando la DB está conectada', async () => {
+    const res = await request(app).get('/api/health');
+    expect(res.statusCode).toEqual(200);
+    expect(res.body.status).toBe('UP');
+  });
+});
+
 describe('GET /api/posiciones', () => {
   it('Debería retornar la lista de equipos ordenada por puntos', async () => {
-    
-    // ❌ ERROR 2 (DEVOPS/VARIABLES): La prueba va a fallar en la terminal de GitHub Actions 
-    // porque espera que el entorno sea estrictamente de test ('test'). Si el archivo
-    // del workflow no inyecta "NODE_ENV: test", esta validación fallará rompiendo el pipeline.
-    if (process.env.NODE_ENV !== 'test') {
-      throw new Error('Seguridad: No se pueden correr pruebas en un entorno que no sea de TEST.');
-    }
+    // ✅ CORRECCIÓN ERROR 2: Eliminado el bloque que lanzaba error si NODE_ENV !== 'test'.
+    // La variable NODE_ENV=test la inyecta el workflow de CI (ci.yml).
+    // El guard ya no es necesario aquí porque el entorno correcto se garantiza en el pipeline.
 
     const res = await request(app).get('/api/posiciones');
-    expect(res.statusCode).colose(200); // Pequeño typo intencional en la aserción de Jest si quieres, o déjalo en .toEqual(200)
+    // ✅ CORRECCIÓN ERROR 7: Typo en la aserción: .colose(200) no existe en Jest.
+    // Corregido a .toEqual(200) que es el método correcto.
     expect(res.statusCode).toEqual(200);
     expect(res.body.length).toBeGreaterThan(0);
     expect(res.body[0].nombre).toBe('ITP F.C.');

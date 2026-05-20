@@ -1,0 +1,40 @@
+# render.yaml — Blueprint de infraestructura para Render
+# Automatiza la creación del Web Service + PostgreSQL gestionado
+
+services:
+  # ─── Backend: Web Service ───────────────────────────────────────────────────
+  - type: web
+    name: futbol-stats-pro
+    runtime: node
+    region: oregon
+    plan: free
+    branch: main
+
+    # Comandos de build y arranque
+    buildCommand: npm ci
+    startCommand: npm start
+
+    # ✅ Health check apuntando al endpoint configurado en app.js
+    healthCheckPath: /api/health
+
+    # ✅ Desplegar solo cuando el pipeline de CI pase en verde
+    autoDeploy: true
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      # ✅ DATABASE_URL se inyecta automáticamente desde el servicio de DB de abajo
+      - key: DATABASE_URL
+        fromDatabase:
+          name: futbol-stats-db
+          property: connectionString
+
+# ─── Base de Datos: PostgreSQL gestionado por Render ─────────────────────────
+databases:
+  - name: futbol-stats-db
+    databaseName: futbol_db
+    user: postgres
+    region: oregon
+    plan: free

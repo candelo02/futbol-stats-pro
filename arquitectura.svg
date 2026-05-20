@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+
+  <!-- Fondo general -->
+  <rect width="900" height="560" fill="#F8F9FA" rx="12"/>
+
+  <!-- Título -->
+  <text x="450" y="38" text-anchor="middle" font-size="20" font-weight="bold" fill="#1A1A2E">Arquitectura de Despliegue — FutbolStats Pro</text>
+  <text x="450" y="58" text-anchor="middle" font-size="12" fill="#6B7280">Máquina local → GitHub Actions (CI) → Render Web Service + Render PostgreSQL</text>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       BLOQUE 1: MÁQUINA LOCAL
+  ════════════════════════════════════════════════════════════════ -->
+  <rect x="30" y="80" width="200" height="260" rx="12" fill="#EEF2FF" stroke="#6366F1" stroke-width="2" stroke-dasharray="6,3"/>
+  <text x="130" y="104" text-anchor="middle" font-size="13" font-weight="bold" fill="#4338CA">💻 Máquina Local</text>
+
+  <!-- Developer box -->
+  <rect x="55" y="115" width="150" height="44" rx="8" fill="#6366F1"/>
+  <text x="130" y="134" text-anchor="middle" font-size="12" fill="white" font-weight="bold">👩‍💻 Desarrollador</text>
+  <text x="130" y="150" text-anchor="middle" font-size="10" fill="#C7D2FE">git push / PR</text>
+
+  <!-- Docker Compose box -->
+  <rect x="55" y="172" width="150" height="56" rx="8" fill="white" stroke="#6366F1" stroke-width="1.5"/>
+  <text x="130" y="192" text-anchor="middle" font-size="11" font-weight="bold" fill="#4338CA">🐳 Docker Compose</text>
+  <text x="130" y="207" text-anchor="middle" font-size="10" fill="#6366F1">backend :3000</text>
+  <text x="130" y="220" text-anchor="middle" font-size="10" fill="#6366F1">db_futbol :5432</text>
+
+  <!-- npm test box -->
+  <rect x="55" y="242" width="150" height="44" rx="8" fill="white" stroke="#6366F1" stroke-width="1.5"/>
+  <text x="130" y="260" text-anchor="middle" font-size="11" font-weight="bold" fill="#4338CA">🧪 npm test</text>
+  <text x="130" y="275" text-anchor="middle" font-size="10" fill="#6366F1">Jest + Supertest</text>
+
+  <!-- .env.example -->
+  <rect x="55" y="300" width="150" height="30" rx="6" fill="#E0E7FF" stroke="#6366F1" stroke-width="1"/>
+  <text x="130" y="320" text-anchor="middle" font-size="10" fill="#4338CA">📄 .env.example</text>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       FLECHA: Local → GitHub
+  ════════════════════════════════════════════════════════════════ -->
+  <line x1="232" y1="200" x2="310" y2="200" stroke="#6B7280" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="271" y="192" text-anchor="middle" font-size="10" fill="#6B7280">git push</text>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       BLOQUE 2: GITHUB
+  ════════════════════════════════════════════════════════════════ -->
+  <rect x="312" y="80" width="200" height="260" rx="12" fill="#F0FFF4" stroke="#22C55E" stroke-width="2" stroke-dasharray="6,3"/>
+  <text x="412" y="104" text-anchor="middle" font-size="13" font-weight="bold" fill="#15803D">🐙 GitHub</text>
+
+  <!-- Repositorio -->
+  <rect x="337" y="115" width="150" height="44" rx="8" fill="#22C55E"/>
+  <text x="412" y="134" text-anchor="middle" font-size="11" font-weight="bold" fill="white">📦 Repositorio</text>
+  <text x="412" y="150" text-anchor="middle" font-size="10" fill="#DCFCE7">branch: main</text>
+
+  <!-- GitHub Actions -->
+  <rect x="337" y="172" width="150" height="100" rx="8" fill="white" stroke="#22C55E" stroke-width="1.5"/>
+  <text x="412" y="192" text-anchor="middle" font-size="11" font-weight="bold" fill="#15803D">⚙️ GitHub Actions</text>
+  <text x="412" y="208" text-anchor="middle" font-size="10" fill="#166534">ci.yml</text>
+  <line x1="340" y1="215" x2="484" y2="215" stroke="#86EFAC" stroke-width="1"/>
+  <text x="412" y="230" text-anchor="middle" font-size="9" fill="#166534">postgres:15-alpine</text>
+  <text x="412" y="244" text-anchor="middle" font-size="9" fill="#166534">NODE_ENV=test</text>
+  <text x="412" y="258" text-anchor="middle" font-size="9" fill="#166534">npm ci &amp;&amp; npm test</text>
+
+  <!-- CI Pass badge -->
+  <rect x="355" y="287" width="114" height="24" rx="12" fill="#BBF7D0" stroke="#22C55E" stroke-width="1"/>
+  <text x="412" y="303" text-anchor="middle" font-size="11" font-weight="bold" fill="#15803D">✅ CI PASS</text>
+
+  <!-- render.yaml note -->
+  <rect x="337" y="320" width="150" height="14" rx="4" fill="#DCFCE7"/>
+  <text x="412" y="331" text-anchor="middle" font-size="9" fill="#15803D">render.yaml · arquitectura.png</text>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       FLECHA: GitHub → Render
+  ════════════════════════════════════════════════════════════════ -->
+  <line x1="514" y1="200" x2="592" y2="200" stroke="#6B7280" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="553" y="192" text-anchor="middle" font-size="10" fill="#6B7280">autoDeploy</text>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       BLOQUE 3: RENDER (contenedor externo)
+  ════════════════════════════════════════════════════════════════ -->
+  <rect x="594" y="80" width="270" height="380" rx="12" fill="#FFF7ED" stroke="#F97316" stroke-width="2" stroke-dasharray="6,3"/>
+  <text x="729" y="104" text-anchor="middle" font-size="13" font-weight="bold" fill="#C2410C">☁️ Render Cloud</text>
+
+  <!-- Web Service -->
+  <rect x="614" y="115" width="230" height="130" rx="10" fill="white" stroke="#F97316" stroke-width="1.5"/>
+  <text x="729" y="136" text-anchor="middle" font-size="12" font-weight="bold" fill="#C2410C">🌐 Web Service</text>
+  <text x="729" y="152" text-anchor="middle" font-size="10" fill="#EA580C">futbol-stats-pro</text>
+  <line x1="617" y1="158" x2="841" y2="158" stroke="#FED7AA" stroke-width="1"/>
+  <text x="729" y="173" text-anchor="middle" font-size="10" fill="#9A3412">runtime: node:24</text>
+  <text x="729" y="188" text-anchor="middle" font-size="10" fill="#9A3412">buildCommand: npm ci</text>
+  <text x="729" y="203" text-anchor="middle" font-size="10" fill="#9A3412">startCommand: npm start</text>
+  <text x="729" y="218" text-anchor="middle" font-size="10" fill="#9A3412">healthCheckPath: /api/health</text>
+  <text x="729" y="233" text-anchor="middle" font-size="10" fill="#9A3412">NODE_ENV=production</text>
+
+  <!-- Endpoints -->
+  <rect x="614" y="258" width="230" height="70" rx="10" fill="#FFEDD5" stroke="#F97316" stroke-width="1"/>
+  <text x="729" y="277" text-anchor="middle" font-size="11" font-weight="bold" fill="#C2410C">📡 Endpoints Públicos</text>
+  <text x="729" y="295" text-anchor="middle" font-size="10" fill="#9A3412">GET /api/health → 200 UP</text>
+  <text x="729" y="312" text-anchor="middle" font-size="10" fill="#9A3412">GET /api/posiciones → tabla</text>
+
+  <!-- PostgreSQL Render -->
+  <rect x="614" y="342" width="230" height="100" rx="10" fill="white" stroke="#F97316" stroke-width="1.5"/>
+  <text x="729" y="362" text-anchor="middle" font-size="12" font-weight="bold" fill="#C2410C">🗄️ PostgreSQL</text>
+  <text x="729" y="378" text-anchor="middle" font-size="10" fill="#EA580C">Managed by Render</text>
+  <line x1="617" y1="384" x2="841" y2="384" stroke="#FED7AA" stroke-width="1"/>
+  <text x="729" y="400" text-anchor="middle" font-size="10" fill="#9A3412">futbol-stats-db</text>
+  <text x="729" y="415" text-anchor="middle" font-size="10" fill="#9A3412">DATABASE_URL (auto-inject)</text>
+  <text x="729" y="430" text-anchor="middle" font-size="10" fill="#9A3412">SSL: rejectUnauthorized=false</text>
+
+  <!-- Flecha interna Web → PG -->
+  <line x1="729" y1="328" x2="729" y2="340" stroke="#F97316" stroke-width="1.5" marker-end="url(#arrow-orange)"/>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       LEYENDA DE 7 ERRORES
+  ════════════════════════════════════════════════════════════════ -->
+  <rect x="30" y="370" width="270" height="170" rx="10" fill="white" stroke="#DC2626" stroke-width="1.5"/>
+  <text x="165" y="392" text-anchor="middle" font-size="12" font-weight="bold" fill="#DC2626">🐛 7 Errores Corregidos</text>
+  <line x1="34" y1="398" x2="296" y2="398" stroke="#FECACA" stroke-width="1"/>
+
+  <text x="44" y="413" font-size="10" fill="#374151">❶ db.js → fallback URL con 'localhost' (no 'db_futbol')</text>
+  <text x="44" y="428" font-size="10" fill="#374151">❷ test → guard que bloqueaba si NODE_ENV≠'test'</text>
+  <text x="44" y="443" font-size="10" fill="#374151">❸ Dockerfile → imagen node:14 obsoleta</text>
+  <text x="44" y="458" font-size="10" fill="#374151">❹ Dockerfile → EXPOSE con puerto incorrecto</text>
+  <text x="44" y="473" font-size="10" fill="#374151">❺ compose → DATABASE_URL apuntaba a 'localhost'</text>
+  <text x="44" y="488" font-size="10" fill="#374151">❻ compose → volumen /data/db (MongoDB) vs Postgres</text>
+  <text x="44" y="503" font-size="10" fill="#374151">❼ test → typo .colose(200) → .toEqual(200)</text>
+  <text x="44" y="520" font-size="10" fill="#6B7280">+ ci.yml sin postgres service ni NODE_ENV=test</text>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       MARCADORES DE FLECHA
+  ════════════════════════════════════════════════════════════════ -->
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#6B7280" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M1 1L9 5L1 9" fill="none" stroke="#F97316" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <!-- Footer -->
+  <text x="450" y="548" text-anchor="middle" font-size="10" fill="#9CA3AF">FutbolStats Pro — Electiva DevOps · Node 24 · PostgreSQL 15 · Docker · GitHub Actions · Render</text>
+</svg>

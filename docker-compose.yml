@@ -6,11 +6,12 @@ services:
       - "3000:3000"
     environment:
       - PORT=3000
-      # ❌ ERROR 5 (RED INTERNA): Apunta a localhost dentro de la red del contenedor. 
-      # Deben cambiarlo a postgresql://postgres:password123@db_futbol:5432/futbol_db
-      - DATABASE_URL=postgresql://postgres:password123@localhost:5432/futbol_db 
+      # ✅ CORRECCIÓN ERROR 5: Cambiado 'localhost' por el nombre del servicio 'db_futbol'
+      # dentro de la red interna de Docker Compose los contenedores se comunican por nombre de servicio
+      - DATABASE_URL=postgresql://postgres:password123@db_futbol:5432/futbol_db
     depends_on:
-      - db_futbol
+      db_futbol:
+        condition: service_healthy
 
   db_futbol:
     image: postgres:15-alpine
@@ -22,11 +23,14 @@ services:
       POSTGRES_DB: futbol_db
     ports:
       - "5432:5432"
+    # ✅ CORRECCIÓN ERROR 6: Ruta interna corregida de /data/db (MongoDB) a /var/lib/postgresql/data (Postgres)
     volumes:
-      # ❌ ERROR 6 (VOLÚMENES): Mapeo incorrecto de la ruta interna de Postgres. 
-      # Pusieron /data/db (que es de MongoDB). Postgres arrojará un error de inicialización en los logs 
-      # porque espera la ruta /var/lib/postgresql/data.
-      - postgres_data:/data/db
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d futbol_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   postgres_data:

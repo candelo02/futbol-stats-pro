@@ -1,0 +1,54 @@
+# ✅ CI/CD Pipeline — FutbolStats Pro
+# CORRECCIÓN ERROR 2: Inyecta NODE_ENV=test para que los tests pasen la validación de entorno
+# CORRECCIÓN: Levanta servicio PostgreSQL real en GitHub Actions para las pruebas de integración
+# CORRECCIÓN: Usa npm ci (instalación limpia y reproducible) en lugar de npm install
+
+name: CI — FutbolStats Pro
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  test:
+    name: 🧪 Tests y Lint
+    runs-on: ubuntu-latest
+
+    # ✅ Servicio PostgreSQL temporal para los tests de integración
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password123
+          POSTGRES_DB: futbol_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    # ✅ CORRECCIÓN ERROR 2: Variables de entorno inyectadas correctamente en el job
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://postgres:password123@localhost:5432/futbol_db
+
+    steps:
+      - name: 📥 Checkout del código
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: 📦 Instalar dependencias (npm ci)
+        run: npm ci
+
+      - name: 🧪 Ejecutar suite de pruebas Jest
+        run: npm test
