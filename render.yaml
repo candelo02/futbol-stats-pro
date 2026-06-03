@@ -2,7 +2,7 @@
 # Automatiza la creación del Web Service + PostgreSQL gestionado
 
 services:
-  # ─── Backend: Web Service ───────────────────────────────────────────────────
+  # ─── Backend + Frontend: Web Service ────────────────────────────────────────
   - type: web
     name: futbol-stats-pro
     runtime: node

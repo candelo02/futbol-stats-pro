@@ -1,13 +1,13 @@
 # ⚽ FutbolStats Pro
 
-API REST para gestión de tablas de posiciones de fútbol.  
-Construida con **Node.js 24 + Express + PostgreSQL**, contenerizada con **Docker**, con CI en **GitHub Actions** y desplegada en **Render**.
+API REST + Frontend para gestión de tablas de posiciones de fútbol.  
+Construida con **Node.js 24 + Express + PostgreSQL**, contenerizada con **Docker**, CI en **GitHub Actions** y desplegada en **Render**.
 
 ---
 
 ## 🏗️ Arquitectura
 
-![Arquitectura de Despliegue](./arquitectura.png)
+![Arquitectura de Despliegue](./arquitectura.svg)
 
 > **Flujo:** Máquina local → GitHub (push) → GitHub Actions CI → Render Web Service + Render PostgreSQL
 
@@ -17,10 +17,10 @@ Construida con **Node.js 24 + Express + PostgreSQL**, contenerizada con **Docker
 
 | # | Archivo | Error original | Corrección |
 |---|---------|---------------|------------|
-| 1 | `src/config/db.js` | Fallback de `DATABASE_URL` apuntaba a `localhost` | Cambiado a `db_futbol` (nombre del servicio Docker) |
-| 2 | `tests/app.test.js` + `ci.yml` | Guard `if (NODE_ENV !== 'test') throw` bloqueaba los tests; CI no inyectaba la variable | Eliminado el guard; `ci.yml` inyecta `NODE_ENV=test` |
+| 1 | `src/config/db.js` | Fallback de `DATABASE_URL` apuntaba a `localhost` dentro de Docker | Fallback solo para dev local; Docker y Render inyectan la URL correcta |
+| 2 | `tests/app.test.js` + `ci.yml` | Guard `if (NODE_ENV !== 'test') throw` bloqueaba los tests; CI no inyectaba la variable | Guard eliminado; `ci.yml` inyecta `NODE_ENV=test` y `DATABASE_URL` |
 | 3 | `Dockerfile` | Imagen base `node:14` (obsoleta, EOL) | Cambiada a `node:24-slim` |
-| 4 | `Dockerfile` | `EXPOSE` con puerto incorrecto | Corregido a `EXPOSE 3000` |
+| 4 | `Dockerfile` | `EXPOSE` con puerto incorrecto (4000) | Corregido a `EXPOSE 3000` |
 | 5 | `docker-compose.yml` | `DATABASE_URL` usaba `localhost` en vez del nombre del servicio | Cambiado a `db_futbol:5432` |
 | 6 | `docker-compose.yml` | Volumen mapeado a `/data/db` (ruta de MongoDB) | Corregido a `/var/lib/postgresql/data` |
 | 7 | `tests/app.test.js` | Typo `.colose(200)` no existe en Jest | Corregido a `.toEqual(200)` |
@@ -31,7 +31,7 @@ Construida con **Node.js 24 + Express + PostgreSQL**, contenerizada con **Docker
 
 ### Prerrequisitos
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) instalado y corriendo
-- Node.js 24+ (solo para desarrollo local sin Docker)
+- Node.js 24+ (solo para tests locales sin Docker)
 
 ### Levantar con Docker Compose
 
@@ -43,17 +43,14 @@ cd futbol-stats-pro
 # Levantar toda la arquitectura (backend + postgres)
 docker-compose up --build
 
-# La API estará disponible en:
-# http://localhost:3000/api/health
-# http://localhost:3000/api/posiciones
+# Frontend:  http://localhost:3000
+# Health:    http://localhost:3000/api/health
+# Tabla:     http://localhost:3000/api/posiciones
 ```
 
 ### Ejecutar tests localmente
 
 ```bash
-# Requiere PostgreSQL corriendo localmente en puerto 5432
-# O usar las variables del .env.example
-
 cp .env.example .env
 npm install
 npm test
@@ -66,83 +63,66 @@ npm test
 | Método | Ruta | Descripción |
 |--------|------|-------------|
 | `GET` | `/api/health` | Estado de la API y conexión a DB |
-| `GET` | `/api/posiciones` | Tabla de posiciones ordenada por puntos |
+| `GET` | `/api/posiciones` | Tabla ordenada por puntos |
+| `POST` | `/api/equipos` | Agregar un equipo |
+| `DELETE` | `/api/equipos/:id` | Eliminar un equipo |
 
-### Respuesta `/api/health`
-```json
-{
-  "status": "UP",
-  "database": "CONNECTED"
-}
-```
+### POST `/api/equipos` — Body
 
-### Respuesta `/api/posiciones`
 ```json
-[
-  {
-    "id": 1,
-    "nombre": "ITP F.C.",
-    "puntos": 9,
-    "diferencia_goles": 5
-  }
-]
+{ "nombre": "Atlético Dev", "puntos": 6, "diferencia_goles": 3 }
 ```
 
 ---
 
 ## 🔄 CI/CD Pipeline
 
-El archivo `.github/workflows/ci.yml` automatiza:
+`.github/workflows/ci.yml` automatiza:
 
-1. **Checkout** del código en `ubuntu-latest`
-2. **Levanta PostgreSQL 15** como servicio temporal
-3. **Setup Node.js 24** con caché de npm
-4. **`npm ci`** — instalación limpia y reproducible
-5. **`npm test`** — suite de Jest con supertest
+1. Checkout en `ubuntu-latest`
+2. Levanta **PostgreSQL 15** como servicio temporal
+3. Setup **Node.js 24** con caché npm
+4. `npm ci` — instalación limpia
+5. `npm test` — suite Jest + Supertest
 
-> El despliegue a Render se activa automáticamente cuando el pipeline pasa en verde (`autoDeploy: true`).
+El despliegue a Render se activa cuando el pipeline pasa (`autoDeploy: true`).
 
 ---
 
 ## ☁️ Despliegue en Render
 
-El archivo `render.yaml` (Blueprint) define:
+`render.yaml` (Blueprint) define:
 
-- **Web Service** `futbol-stats-pro` — runtime Node, `npm ci` + `npm start`
+- **Web Service** `futbol-stats-pro` — `npm ci` + `npm start`
 - **PostgreSQL** gestionado `futbol-stats-db` — `DATABASE_URL` inyectada automáticamente
 - `healthCheckPath: /api/health`
-- `autoDeploy: true` — despliega solo cuando CI pasa
+- `autoDeploy: true`
 
-### Pasos para desplegar
+### Pasos
 
-1. Conectar el repositorio en [render.com](https://render.com)
-2. Seleccionar **"Blueprint"** y apuntar a `render.yaml`
-3. Render crea automáticamente el Web Service + PostgreSQL
-4. Copiar la URL pública y verificar: `https://TU-URL.onrender.com/api/health`
+1. Conectar el repo en [render.com](https://render.com)
+2. Seleccionar **"Blueprint"** → apuntar a `render.yaml`
+3. Render crea Web Service + PostgreSQL automáticamente
+4. Verificar: `https://TU-URL.onrender.com/api/health`
 
 ---
 
-## 📁 Estructura del proyecto
+## 📁 Estructura
 
 ```
 futbol-stats-pro/
-├── .github/
-│   └── workflows/
-│       └── ci.yml          # Pipeline de GitHub Actions
+├── .github/workflows/ci.yml   # Pipeline GitHub Actions
+├── public/index.html          # Frontend (tabla de posiciones)
 ├── src/
-│   ├── app.js              # Servidor Express + endpoints
-│   └── config/
-│       └── db.js           # Pool de conexión PostgreSQL
-├── tests/
-│   └── app.test.js         # Suite de pruebas Jest + Supertest
-├── .env.example            # Plantilla de variables de entorno
-├── .gitignore
-├── arquitectura.png        # Diagrama de despliegue
-├── arquitectura.svg        # Fuente del diagrama
-├── docker-compose.yml      # Orquestación local
-├── Dockerfile              # Imagen del backend
+│   ├── app.js                 # Express — todos los endpoints + static
+│   └── config/db.js           # Pool de conexión PostgreSQL
+├── tests/app.test.js          # Suite Jest + Supertest
+├── .env.example
+├── arquitectura.svg           # Diagrama de despliegue
+├── docker-compose.yml
+├── Dockerfile
 ├── package.json
-└── render.yaml             # Blueprint de infraestructura Render
+└── render.yaml                # Blueprint Render
 ```
 
 ---
@@ -152,14 +132,8 @@ futbol-stats-pro/
 | Variable | Descripción | Ejemplo |
 |----------|-------------|---------|
 | `PORT` | Puerto del servidor | `3000` |
-| `NODE_ENV` | Entorno (`development`, `test`, `production`) | `production` |
-| `DATABASE_URL` | URI de conexión PostgreSQL | `postgresql://user:pass@host:5432/db` |
-
----
-
-## 👤 Autor
-
-Desarrollado como proyecto individual para la asignatura **Electiva DevOps**.
+| `NODE_ENV` | Entorno | `development` / `test` / `production` |
+| `DATABASE_URL` | URI PostgreSQL | `postgresql://user:pass@host:5432/db` |
 
 ---
 

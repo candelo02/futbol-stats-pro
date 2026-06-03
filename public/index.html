@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FutbolStats Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --green:   #00FF87;
+      --green2:  #00C96B;
+      --dark:    #080C10;
+      --card:    #0D1117;
+      --card2:   #131920;
+      --border:  rgba(0,255,135,0.15);
+      --muted:   #4A5568;
+      --text:    #E2E8F0;
+      --danger:  #FF4757;
+      --gold:    #FFD700;
+      --silver:  #C0C0C0;
+      --bronze:  #CD7F32;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── FONDO ANIMADO ─────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 10% 20%, rgba(0,255,135,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 50% at 90% 80%, rgba(0,201,107,0.04) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── GRID PATTERN ─────────────────────────────── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,255,135,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,135,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── HEADER ─────────────────────────────── */
+    header {
+      position: relative;
+      z-index: 10;
+      padding: 2rem 2rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      background: var(--green);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .logo-text h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      color: var(--green);
+      letter-spacing: 2px;
+      line-height: 1;
+    }
+
+    .logo-text span {
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 1rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      font-size: 0.75rem;
+      color: var(--muted);
+      background: var(--card);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+      transition: background 0.3s;
+    }
+    .status-dot.up { background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s infinite; }
+    .status-dot.down { background: var(--danger); }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ── MAIN ─────────────────────────────── */
+    main {
+      position: relative;
+      z-index: 10;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* ── STATS CARDS ─────────────────────────────── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      animation: fadeUp 0.5s ease both;
+    }
+
+    .stat-card:nth-child(1) { animation-delay: 0.05s; }
+    .stat-card:nth-child(2) { animation-delay: 0.1s; }
+    .stat-card:nth-child(3) { animation-delay: 0.15s; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .stat-icon {
+      font-size: 2rem;
+      width: 52px;
+      height: 52px;
+      background: rgba(0,255,135,0.08);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .stat-info .label {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .stat-info .value {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      color: var(--green);
+      line-height: 1.1;
+    }
+
+    /* ── SECCIÓN PRINCIPAL ─────────────────────────────── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 2px;
+      color: var(--text);
+    }
+
+    .section-title span {
+      color: var(--green);
+    }
+
+    /* ── FORMULARIO ─────────────────────────────── */
+    .form-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.5s 0.2s ease both;
+    }
+
+    .form-card h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      color: var(--green);
+      letter-spacing: 2px;
+      margin-bottom: 1rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr auto;
+      gap: 0.75rem;
+      align-items: end;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 0.4rem;
+    }
+
+    .field input {
+      width: 100%;
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 0.9rem;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .field input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(0,255,135,0.08);
+    }
+
+    .field input::placeholder { color: var(--muted); }
+
+    .btn {
+      padding: 0.65rem 1.5rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--green);
+      color: var(--dark);
+    }
+    .btn-primary:hover { background: var(--green2); transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+
+    /* ── TABLA ─────────────────────────────── */
+    .table-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      animation: fadeUp 0.5s 0.25s ease both;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: var(--card2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    thead th {
+      padding: 0.9rem 1.25rem;
+      text-align: left;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    thead th.center { text-align: center; }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: background 0.15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(0,255,135,0.03); }
+
+    tbody td {
+      padding: 0.9rem 1.25rem;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    tbody td.left { text-align: left; }
+
+    /* Posición */
+    .pos-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem;
+    }
+
+    .pos-1 { background: rgba(255,215,0,0.15); color: var(--gold); border: 1px solid rgba(255,215,0,0.3); }
+    .pos-2 { background: rgba(192,192,192,0.15); color: var(--silver); border: 1px solid rgba(192,192,192,0.3); }
+    .pos-3 { background: rgba(205,127,50,0.15); color: var(--bronze); border: 1px solid rgba(205,127,50,0.3); }
+    .pos-n { background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid rgba(255,255,255,0.08); }
+
+    /* Nombre equipo */
+    .team-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* Puntos */
+    .pts {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem;
+      color: var(--green);
+    }
+
+    /* Diferencia goles */
+    .dg-pos { color: var(--green); }
+    .dg-neg { color: var(--danger); }
+    .dg-zero { color: var(--muted); }
+
+    /* Botón eliminar */
+    .btn-del {
+      background: transparent;
+      border: 1px solid rgba(255,71,87,0.3);
+      color: var(--danger);
+      border-radius: 6px;
+      padding: 0.3rem 0.7rem;
+      cursor: pointer;
+      font-size: 0.75rem;
+      transition: all 0.2s;
+    }
+    .btn-del:hover { background: rgba(255,71,87,0.1); border-color: var(--danger); }
+
+    /* ── EMPTY STATE ─────────────────────────────── */
+    .empty {
+      padding: 3rem;
+      text-align: center;
+      color: var(--muted);
+    }
+    .empty-icon { font-size: 3rem; margin-bottom: 0.75rem; }
+    .empty p { font-size: 0.9rem; }
+
+    /* ── TOAST ─────────────────────────────── */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      padding: 0.75rem 1.25rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s;
+      pointer-events: none;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+    #toast.success { background: rgba(0,255,135,0.15); border: 1px solid var(--green); color: var(--green); }
+    #toast.error   { background: rgba(255,71,87,0.15); border: 1px solid var(--danger); color: var(--danger); }
+
+    /* ── SKELETON LOADER ─────────────────────────────── */
+    .skeleton {
+      background: linear-gradient(90deg, var(--card2) 25%, rgba(255,255,255,0.04) 50%, var(--card2) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s infinite;
+      border-radius: 6px;
+      height: 20px;
+    }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+
+    /* ── RESPONSIVE ─────────────────────────────── */
+    @media (max-width: 700px) {
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .form-grid { grid-template-columns: 1fr 1fr; }
+      .form-grid .btn { grid-column: 1/-1; }
+      header { flex-direction: column; gap: 1rem; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">⚽</div>
+    <div class="logo-text">
+      <h1>FutbolStats Pro</h1>
+      <span>Tabla de posiciones</span>
+    </div>
+  </div>
+  <div class="status-pill">
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">Verificando API...</span>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon">🏆</div>
+      <div class="stat-info">
+        <div class="label">Equipos</div>
+        <div class="value" id="statEquipos">—</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⚡</div>
+      <div class="stat-info">
+        <div class="label">Líder (pts)</div>
+        <div class="value" id="statLider">—</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🎯</div>
+      <div class="stat-info">
+        <div class="label">Mayor DG</div>
+        <div class="value" id="statDG">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORMULARIO -->
+  <div class="form-card">
+    <h3>➕ Agregar equipo</h3>
+    <div class="form-grid">
+      <div class="field">
+        <label>Nombre del equipo</label>
+        <input type="text" id="inputNombre" placeholder="Ej: Atlético Dev" maxlength="50"/>
+      </div>
+      <div class="field">
+        <label>Puntos</label>
+        <input type="number" id="inputPuntos" placeholder="0" min="0"/>
+      </div>
+      <div class="field">
+        <label>Dif. de goles</label>
+        <input type="number" id="inputDG" placeholder="0"/>
+      </div>
+      <button class="btn btn-primary" onclick="agregarEquipo()">Agregar</button>
+    </div>
+  </div>
+
+  <!-- TABLA -->
+  <div class="section-header">
+    <h2 class="section-title">Tabla de <span>Posiciones</span></h2>
+    <button class="btn btn-primary" onclick="cargarTabla()" style="font-size:0.78rem;padding:0.5rem 1rem;">↻ Actualizar</button>
+  </div>
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th class="center">#</th>
+          <th>Equipo</th>
+          <th class="center">Puntos</th>
+          <th class="center">Dif. Goles</th>
+          <th class="center">Acción</th>
+        </tr>
+      </thead>
+      <tbody id="tablaBody">
+        <!-- filas dinámicas -->
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+  const API = '';  // mismo origen — Nginx proxea /api → backend:3000
+
+  /* ── HEALTH CHECK ─────────────────────────────── */
+  async function checkHealth() {
+    try {
+      const r = await fetch(`${API}/api/health`);
+      const d = await r.json();
+      const dot  = document.getElementById('statusDot');
+      const txt  = document.getElementById('statusText');
+      if (d.status === 'UP') {
+        dot.className = 'status-dot up';
+        txt.textContent = 'API conectada';
+      } else {
+        dot.className = 'status-dot down';
+        txt.textContent = 'DB desconectada';
+      }
+    } catch {
+      document.getElementById('statusDot').className = 'status-dot down';
+      document.getElementById('statusText').textContent = 'API no disponible';
+    }
+  }
+
+  /* ── CARGAR TABLA ─────────────────────────────── */
+  async function cargarTabla() {
+    const tbody = document.getElementById('tablaBody');
+    tbody.innerHTML = `
+      <tr><td colspan="5" style="padding:1.5rem">
+        <div class="skeleton" style="max-width:60%;margin:0 auto"></div>
+      </td></tr>`;
+    try {
+      const r = await fetch(`${API}/api/posiciones`);
+      const equipos = await r.json();
+
+      // Stats
+      document.getElementById('statEquipos').textContent = equipos.length || '0';
+      if (equipos.length > 0) {
+        document.getElementById('statLider').textContent = equipos[0].puntos;
+        const maxDG = Math.max(...equipos.map(e => e.diferencia_goles));
+        document.getElementById('statDG').textContent = (maxDG >= 0 ? '+' : '') + maxDG;
+      } else {
+        document.getElementById('statLider').textContent = '—';
+        document.getElementById('statDG').textContent = '—';
+      }
+
+      // Tabla
+      if (equipos.length === 0) {
+        tbody.innerHTML = `
+          <tr><td colspan="5">
+            <div class="empty">
+              <div class="empty-icon">🏟️</div>
+              <p>No hay equipos registrados. ¡Agrega el primero!</p>
+            </div>
+          </td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = equipos.map((eq, i) => {
+        const pos = i + 1;
+        const posCls = pos === 1 ? 'pos-1' : pos === 2 ? 'pos-2' : pos === 3 ? 'pos-3' : 'pos-n';
+        const dg = eq.diferencia_goles;
+        const dgCls = dg > 0 ? 'dg-pos' : dg < 0 ? 'dg-neg' : 'dg-zero';
+        const dgStr = dg > 0 ? `+${dg}` : `${dg}`;
+        return `
+          <tr>
+            <td><span class="pos-badge ${posCls}">${pos}</span></td>
+            <td class="left"><span class="team-name">${escHtml(eq.nombre)}</span></td>
+            <td><span class="pts">${eq.puntos}</span></td>
+            <td><span class="${dgCls}">${dgStr}</span></td>
+            <td><button class="btn-del" onclick="eliminarEquipo(${eq.id}, '${escHtml(eq.nombre)}')">✕ Eliminar</button></td>
+          </tr>`;
+      }).join('');
+
+    } catch (e) {
+      tbody.innerHTML = `<tr><td colspan="5" class="empty"><div class="empty-icon">⚠️</div><p>Error al cargar datos</p></td></tr>`;
+    }
+  }
+
+  /* ── AGREGAR EQUIPO ─────────────────────────────── */
+  async function agregarEquipo() {
+    const nombre = document.getElementById('inputNombre').value.trim();
+    const puntos = parseInt(document.getElementById('inputPuntos').value) || 0;
+    const dg     = parseInt(document.getElementById('inputDG').value) || 0;
+
+    if (!nombre) { toast('Escribe el nombre del equipo', 'error'); return; }
+
+    try {
+      const r = await fetch(`${API}/api/equipos`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, puntos, diferencia_goles: dg })
+      });
+      if (!r.ok) {
+        const err = await r.json();
+        toast(err.error || 'Error al agregar', 'error');
+        return;
+      }
+      document.getElementById('inputNombre').value = '';
+      document.getElementById('inputPuntos').value = '';
+      document.getElementById('inputDG').value = '';
+      toast(`✅ ${nombre} agregado`, 'success');
+      cargarTabla();
+    } catch {
+      toast('Error de conexión', 'error');
+    }
+  }
+
+  /* ── ELIMINAR EQUIPO ─────────────────────────────── */
+  async function eliminarEquipo(id, nombre) {
+    if (!confirm(`¿Eliminar a "${nombre}"?`)) return;
+    try {
+      const r = await fetch(`${API}/api/equipos/${id}`, { method: 'DELETE' });
+      if (!r.ok) { toast('Error al eliminar', 'error'); return; }
+      toast(`🗑️ ${nombre} eliminado`, 'success');
+      cargarTabla();
+    } catch {
+      toast('Error de conexión', 'error');
+    }
+  }
+
+  /* ── TOAST ─────────────────────────────── */
+  function toast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `show ${type}`;
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => { t.className = ''; }, 3000);
+  }
+
+  /* ── ESCAPE HTML ─────────────────────────────── */
+  function escHtml(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ── INIT ─────────────────────────────── */
+  checkHealth();
+  cargarTabla();
+  setInterval(checkHealth, 30000);
+</script>
+</body>
+</html>
