@@ -8,6 +8,19 @@ app.use(express.json());
 // ── Archivos estáticos del frontend ────────────────────────────────────────
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
+// ── Inicializar la tabla si no existe ─────────────────────────────────────
+async function initDB() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS equipos (
+      id               SERIAL PRIMARY KEY,
+      nombre           VARCHAR(50) NOT NULL UNIQUE,
+      puntos           INT DEFAULT 0,
+      diferencia_goles INT DEFAULT 0
+    );
+  `);
+  console.log('✅ Tabla equipos lista');
+}
+
 // ── Endpoint de Salud para Render (Health Check) ───────────────────────────
 app.get('/api/health', async (req, res) => {
   try {
@@ -74,7 +87,7 @@ app.delete('/api/equipos/:id', async (req, res) => {
   }
 });
 
-// ── Fallback SPA — Express 5 requiere la sintaxis /{*path} en lugar de * ──
+// ── Fallback SPA — Express 5 requiere la sintaxis /{*path} ────────────────
 app.get('/{*path}', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
@@ -83,9 +96,16 @@ app.get('/{*path}', (req, res) => {
 const PORT = process.env.PORT || 3000;
 
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
-  });
+  initDB()
+    .then(() => {
+      app.listen(PORT, () => {
+        console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.error('❌ Error al inicializar la DB:', err);
+      process.exit(1);
+    });
 }
 
 module.exports = app;
