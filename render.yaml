@@ -17,8 +17,10 @@ services:
     # ✅ Health check apuntando al endpoint configurado en app.js
     healthCheckPath: /api/health
 
-    # ✅ Desplegar solo cuando el pipeline de CI pase en verde
+    # ✅ Desplegar SOLO cuando el pipeline de CI de GitHub Actions pase en verde
+    # Equivale a la opción "After CI check pass" en el dashboard de Render
     autoDeploy: true
+    deployOnCiPass: true
 
     envVars:
       - key: NODE_ENV
